@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Input Bank Soal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f3f5fc; --card:#ffffff; --text:#1b2236; --muted:#69728a; --line:#e3e7f3;
+    --p1:#4f46e5; --p2:#7c3aed; --p3:#06b6d4;
+    --ok:#0f9d6b; --err:#dc3545; --soft:#eef0ff;
+    --shadow:0 10px 30px -12px rgba(79,70,229,.25);
+    --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{--bg:#0f1220;--card:#181c30;--text:#eef0fa;--muted:#9aa3bf;--line:#2a3050;--soft:#222850;--shadow:0 10px 30px -12px rgba(0,0,0,.6)}
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);padding-bottom:110px}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(135deg,var(--p1),var(--p2) 55%,var(--p3));
+    color:#fff;padding:38px 18px 90px;position:relative;overflow:hidden;
+  }
+  .hero::before,.hero::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.12)}
+  .hero::before{width:260px;height:260px;right:-60px;top:-90px}
+  .hero::after{width:180px;height:180px;left:-50px;bottom:-90px}
+  .hero-in{max-width:820px;margin:0 auto;position:relative;z-index:1}
+  .hero h1{margin:0 0 6px;font-size:1.75rem;font-weight:800;letter-spacing:-.02em}
+  .hero p{margin:0;opacity:.9;font-size:.95rem}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);padding:5px 12px;border-radius:99px;font-size:.78rem;font-weight:600;margin-bottom:12px;backdrop-filter:blur(6px)}
+
+  .wrap{max-width:820px;margin:-62px auto 0;padding:0 14px;position:relative;z-index:2}
+  .warn{background:#fff6da;border:1px solid #f0d58a;color:#7a5b00;padding:11px 14px;border-radius:12px;font-size:.85rem;margin-bottom:14px;display:none}
+
+  /* ---------- Cards ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+  label.lb{display:block;font-weight:700;font-size:.82rem;margin-bottom:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  input,textarea{
+    width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;
+    font:inherit;font-size:.95rem;background:var(--card);color:var(--text);transition:.18s;
+  }
+  input::placeholder,textarea::placeholder{color:var(--muted);opacity:.7}
+  input:focus,textarea:focus{outline:none;border-color:var(--p1);box-shadow:0 0 0 4px rgba(79,70,229,.14)}
+  textarea{resize:vertical;min-height:84px}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:7px}
+
+  .materi-card{border-top:5px solid var(--p1)}
+  .materi-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .badge-ico{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;display:grid;place-items:center;font-size:1.1rem;flex:none}
+  .materi-top b{font-size:1.02rem}
+
+  /* ---------- Question card ---------- */
+  .q{animation:pop .3s ease both;position:relative}
+  .q.removing{animation:out .2s ease forwards}
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes out{to{opacity:0;transform:scale(.95);height:0;margin:0;padding:0}}
+  .q-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .q-num{
+    min-width:40px;height:40px;border-radius:12px;background:var(--soft);color:var(--p1);
+    font-weight:800;display:grid;place-items:center;font-size:1rem;padding:0 8px
+  }
+  .q-title{font-weight:700;flex:1}
+  .icon-btn{
+    border:none;background:var(--soft);color:var(--muted);width:36px;height:36px;border-radius:10px;
+    cursor:pointer;font-size:1rem;display:grid;place-items:center;transition:.15s
+  }
+  .icon-btn:hover{background:var(--p1);color:#fff}
+  .icon-btn.danger:hover{background:var(--err)}
+
+  .ans-head{display:grid;grid-template-columns:34px 1fr 96px 34px;gap:8px;font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+  .row{display:grid;grid-template-columns:34px 1fr 96px 34px;gap:8px;align-items:center;margin-bottom:8px;animation:pop .22s ease both}
+  .row .no{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--p1),var(--p3));color:#fff;font-size:.78rem;font-weight:700;display:grid;place-items:center}
+  .row .del{border:none;background:transparent;color:var(--muted);font-size:1rem;cursor:pointer;border-radius:8px;height:34px;transition:.15s}
+  .row .del:hover{background:rgba(220,53,69,.12);color:var(--err)}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    padding:11px 18px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--text);
+    font:inherit;font-weight:700;font-size:.9rem;cursor:pointer;transition:.18s
+  }
+  .btn:hover{border-color:var(--p1);color:var(--p1);transform:translateY(-1px)}
+  .btn.ghost{border-style:dashed;background:transparent;color:var(--p1);border-color:var(--p1);width:100%}
+  .btn.ghost:hover{background:var(--soft)}
+  .btn.small{padding:8px 14px;font-size:.82rem}
+  .btn.primary{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;border:none;box-shadow:0 8px 20px -6px rgba(79,70,229,.55)}
+  .btn.primary:hover{color:#fff;filter:brightness(1.08)}
+  .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+  .add-q{margin-bottom:16px;padding:16px;font-size:1rem}
+
+  /* ---------- Sticky bar ---------- */
+  .bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;
+    background:color-mix(in srgb,var(--card) 88%,transparent);backdrop-filter:blur(14px);
+    border-top:1px solid var(--line);padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));
+  }
+  .bar-in{max-width:820px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .stat{flex:1;font-size:.85rem;color:var(--muted);line-height:1.35}
+  .stat b{color:var(--text);font-size:1rem}
+
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed;right:18px;bottom:92px;z-index:21;width:54px;height:54px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,var(--p3),var(--p1));color:#fff;font-size:1.8rem;line-height:1;cursor:pointer;
+    box-shadow:0 10px 24px -6px rgba(6,182,212,.6);transition:.2s;
+  }
+  .fab:hover{transform:scale(1.1) rotate(90deg)}
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;left:50%;top:18px;transform:translate(-50%,-120px);z-index:50;
+    padding:12px 20px;border-radius:14px;color:#fff;font-weight:600;font-size:.9rem;
+    box-shadow:0 14px 30px -10px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.3,1.4,.5,1);max-width:92vw;text-align:center
+  }
+  .toast.show{transform:translate(-50%,0)}
+  .toast.ok{background:var(--ok)} .toast.err{background:var(--err)} .toast.info{background:var(--p1)}
+
+  @media(max-width:540px){
+    .hero h1{font-size:1.4rem}
+    .ans-head,.row{grid-template-columns:30px 1fr 74px 30px;gap:6px}
+    .card{padding:16px;border-radius:16px}
+    .bar-in .btn.primary{padding:11px 14px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-in">
+    <span class="pill">📚 Bank Soal → Google Spreadsheet</span>
+    <h1>Input Soal &amp; Jawaban</h1>
+    <p>Pilih satu materi, lalu tambahkan sebanyak mungkin pertanyaan sekaligus.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="warn" id="warn">⚠️ <b>SCRIPT_URL</b> belum diisi. Buka file ini di teks editor lalu ganti dengan URL Web App (berakhiran <code>/exec</code>).</div>
+
+  <!-- Materi -->
+  <section class="card materi-card">
+    <div class="materi-top">
+      <div class="badge-ico">🎯</div>
+      <b>Materi</b>
+    </div>
+    <label class="lb" for="materi">Nama Materi</label>
+    <input id="materi" list="materiList" placeholder="Contoh: Bab 1 - Aljabar" autocomplete="off">
+    <datalist id="materiList"></datalist>
+    <div class="hint">Berlaku untuk semua pertanyaan di bawah. Materi diingat setelah kirim &amp; muncul sebagai saran.</div>
+  </section>
+
+  <!-- Daftar pertanyaan -->
+  <div id="qs"></div>
+
+  <button type="button" class="btn ghost add-q" id="addQ">＋ Tambah Pertanyaan (materi sama)</button>
+</main>
+
+<button type="button" class="fab" id="fab" title="Tambah pertanyaan">+</button>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="stat" id="stat"></div>
+    <button type="button" class="btn small" id="reset">Kosongkan</button>
+    <button type="button" class="btn primary" id="send">🚀 Kirim Semua</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== GANTI DENGAN URL WEB APP ANDA (berakhiran /exec) ======
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlYhKu0-5UY8zzntcAggk3OWpDEBJYgzOd7gTeuLEe47pWkvOatjOnJlqOAMX5F8TL/exec";
+// ===============================================================
+
+const DEFAULT_ANS = 4;   // jumlah jawaban awal per pertanyaan
+const MAX_ANS = 20;      // batas maksimal jawaban per pertanyaan
+const MAX_Q = 100;       // batas maksimal pertanyaan sekali kirim
+
+const $ = id => document.getElementById(id);
+const qsEl = $('qs');
+let totalSent = 0;
+
+if (SCRIPT_URL.includes("GANTI_DENGAN")) $('warn').style.display = 'block';
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg, type='info', ms=3200){
+  const t = $('toast');
+  t.textContent = msg; t.className = 'toast ' + type;
+  requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+/* ---------- Riwayat materi ---------- */
+function loadHistory(){ try { return JSON.parse(localStorage.getItem('materiHistory') || '[]'); } catch(e){ return []; } }
+function saveMateri(m){
+  try{
+    const h = loadHistory().filter(x => x !== m); h.unshift(m);
+    localStorage.setItem('materiHistory', JSON.stringify(h.slice(0,30)));
+    localStorage.setItem('materiLast', m);
+  }catch(e){}
+  renderHistory();
+}
+function renderHistory(){
+  $('materiList').innerHTML = loadHistory().map(m => `<option value="${m.replace(/"/g,'&quot;')}">`).join('');
+}
+try { $('materi').value = localStorage.getItem('materiLast') || ''; } catch(e){}
+renderHistory();
+
+/* ---------- Jawaban ---------- */
+function renumberAnswers(q){
+  const rows = q.querySelectorAll('.row');
+  rows.forEach((r,i) => r.querySelector('.no').textContent = i+1);
+  q.querySelector('.add-ans').disabled = rows.length >= MAX_ANS;
+}
+function addAnswer(q, jawaban='', poin=''){
+  const box = q.querySelector('.ans');
+  if (box.children.length >= MAX_ANS) return;
+  const d = document.createElement('div');
+  d.className = 'row';
+  d.innerHTML = `
+    <span class="no"></span>
+    <input type="text" class="jwb" placeholder="Teks jawaban">
+    <input type="number" class="pn" placeholder="Poin" step="any">
+    <button type="button" class="del" title="Hapus jawaban">✕</button>`;
+  d.querySelector('.jwb').value = jawaban;
+  d.querySelector('.pn').value = poin;
+  d.querySelector('.del').onclick = () => { d.remove(); renumberAnswers(q); updateStat(); };
+  d.querySelector('.jwb').addEventListener('input', updateStat);
+  box.appendChild(d);
+  renumberAnswers(q);
+}
+
+/* ---------- Pertanyaan ---------- */
+function renumberQuestions(){
+  [...qsEl.children].forEach((q,i) => {
+    q.querySelector('.q-num').textContent = i+1;
+    q.querySelector('.q-title').textContent = 'Pertanyaan ' + (i+1);
+    q.querySelector('.rm-q').style.visibility = qsEl.children.length > 1 ? 'visible' : 'hidden';
+  });
+  updateStat();
+}
+function addQuestion(focus=true, data=null){
+  if (qsEl.children.length >= MAX_Q) { toast('Maksimal ' + MAX_Q + ' pertanyaan sekali kirim.', 'err'); return; }
+  const q = document.createElement('section');
+  q.className = 'card q';
+  q.innerHTML = `
+    <div class="q-head">
+      <div class="q-num"></div>
+      <div class="q-title"></div>
+      <button type="button" class="icon-btn dup" title="Gandakan pertanyaan ini">⧉</button>
+      <button type="button" class="icon-btn danger rm-q" title="Hapus pertanyaan">🗑</button>
+    </div>
+    <label class="lb">Pertanyaan</label>
+    <textarea class="ptn" placeholder="Tulis pertanyaan di sini..."></textarea>
+    <div class="ans-head"><span></span><span>Jawaban</span><span>Poin</span><span></span></div>
+    <div class="ans"></div>
+    <button type="button" class="btn small add-ans">＋ Tambah Jawaban</button>`;
+
+  const ptn = q.querySelector('.ptn');
+  ptn.addEventListener('input', updateStat);
+  q.querySelector('.add-ans').onclick = () => {
+    addAnswer(q); updateStat();
+    q.querySelector('.ans').lastElementChild.querySelector('.jwb').focus();
+  };
+  q.querySelector('.rm-q').onclick = () => {
+    if (qsEl.children.length <= 1) return;
+    q.classList.add('removing');
+    setTimeout(() => { q.remove(); renumberQuestions(); }, 200);
+  };
+  q.querySelector('.dup').onclick = () => {
+    const copy = readQuestion(q);
+    addQuestion(false, copy);
+    qsEl.lastElementChild.scrollIntoView({behavior:'smooth', block:'center'});
+    toast('Pertanyaan digandakan', 'info', 1600);
+  };
+
+  if (data){
+    ptn.value = data.pertanyaan || '';
+    const list = data.jawaban && data.jawaban.length ? data.jawaban : null;
+    if (list) list.forEach(a => addAnswer(q, a.jawaban, a.poin));
+    else for (let i=0;i<DEFAULT_ANS;i++) addAnswer(q);
+  } else {
+    for (let i=0;i<DEFAULT_ANS;i++) addAnswer(q);
+  }
+
+  qsEl.appendChild(q);
+  renumberQuestions();
+  if (focus){
+    q.scrollIntoView({behavior:'smooth', block:'center'});
+    setTimeout(() => ptn.focus({preventScroll:true}), 350);
+  }
+}
+
+/* ---------- Baca data ---------- */
+function readQuestion(q){
+  return {
+    pertanyaan: q.querySelector('.ptn').value.trim(),
+    jawaban: [...q.querySelectorAll('.row')].map(r => ({
+      jawaban: r.querySelector('.jwb').value.trim(),
+      poin: r.querySelector('.pn').value
+    })).filter(a => a.jawaban !== '')
+  };
+}
+function readAll(){ return [...qsEl.children].map(readQuestion); }
+
+function updateStat(){
+  const all = readAll();
+  const filled = all.filter(s => s.pertanyaan).length;
+  const ans = all.reduce((n,s) => n + (s.pertanyaan ? s.jawaban.length : 0), 0);
+  $('stat').innerHTML = `<b>${filled}</b> / ${all.length} pertanyaan siap · ${ans} jawaban` +
+    (totalSent ? `<br>✅ ${totalSent} soal terkirim sesi ini` : '');
+}
+
+function resetQuestions(){
+  qsEl.innerHTML = '';
+  addQuestion(false);
+}
+
+/* ---------- Event ---------- */
+$('addQ').onclick = () => addQuestion();
+$('fab').onclick = () => addQuestion();
+$('reset').onclick = () => {
+  if (readAll().some(s => s.pertanyaan || s.jawaban.length) && !confirm('Kosongkan semua pertanyaan di form?')) return;
+  resetQuestions(); toast('Form dikosongkan', 'info', 1500);
+};
+
+$('send').onclick = async () => {
+  if (SCRIPT_URL.includes("GANTI_DENGAN")) { toast('SCRIPT_URL belum diisi di file HTML.', 'err'); return; }
+
+  const materi = $('materi').value.trim();
+  if (!materi){ toast('Materi wajib diisi.', 'err'); $('materi').focus(); window.scrollTo({top:0,behavior:'smooth'}); return; }
+
+  // Validasi per pertanyaan
+  const cards = [...qsEl.children];
+  const soal = [];
+  for (let i=0;i<cards.length;i++){
+    const s = readQuestion(cards[i]);
+    if (!s.pertanyaan && !s.jawaban.length) continue;        // kartu kosong dilewati
+    if (!s.pertanyaan){ toast(`Pertanyaan ${i+1} belum ditulis.`, 'err'); cards[i].scrollIntoView({behavior:'smooth',block:'center'}); cards[i].querySelector('.ptn').focus({preventScroll:true}); return; }
+    if (!s.jawaban.length){ toast(`Pertanyaan ${i+1} belum punya jawaban.`, 'err'); cards[i].scrollIntoView({behavior:'smooth',block:'center'}); return; }
+    soal.push(s);
+  }
+  if (!soal.length){ toast('Belum ada pertanyaan yang diisi.', 'err'); return; }
+
+  const btn = $('send');
+  btn.disabled = true; btn.textContent = '⏳ Mengirim...';
+
+  try {
+    // text/plain + no-cors agar tidak kena preflight CORS pada Apps Script
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ materi, soal })
+    });
+
+    saveMateri(materi);
+    totalSent += soal.length;
+    resetQuestions();
+    toast(`✓ ${soal.length} pertanyaan terkirim ke spreadsheet`, 'ok', 3800);
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch (err) {
+    toast('Gagal mengirim: ' + err.message, 'err', 5000);
+  } finally {
+    btn.disabled = false; btn.textContent = '🚀 Kirim Semua';
+  }
+};
+
+// Mulai dengan satu pertanyaan
+addQuestion(false);
+</script>
+</body>
+</html>
